@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import styles from './success.module.css';
@@ -56,7 +56,8 @@ const translations = {
   }
 };
 
-export default function PaymentSuccess() {
+// Component that handles search params
+function PaymentSuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [reservationDetails, setReservationDetails] = useState(null);
@@ -232,5 +233,29 @@ export default function PaymentSuccess() {
         </div> */}
       </div>
     </div>
+  );
+}
+
+// Loading component for Suspense fallback
+function PaymentSuccessLoading() {
+  return (
+    <div className={styles.container}>
+      <div className={styles.successCard}>
+        <div className={styles.iconContainer}>
+          <div className={styles.loadingSpinner}></div>
+        </div>
+        <h1 className={styles.title}>Loading...</h1>
+        <p className={styles.subtitle}>Please wait while we load your payment details.</p>
+      </div>
+    </div>
+  );
+}
+
+// Main export component with Suspense boundary
+export default function PaymentSuccess() {
+  return (
+    <Suspense fallback={<PaymentSuccessLoading />}>
+      <PaymentSuccessContent />
+    </Suspense>
   );
 }
