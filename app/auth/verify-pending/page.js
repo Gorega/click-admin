@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { FiMail, FiRefreshCw, FiArrowLeft, FiClock, FiAlertCircle, FiCheckCircle } from 'react-icons/fi';
 import { useAuth } from '../../../hooks/useAuth';
@@ -34,7 +34,7 @@ function VerifyPendingContent() {
     return () => clearTimeout(timer);
   }, [cooldown]);
 
-  const handleResendEmail = async () => {
+  const handleResendEmail = useCallback(async () => {
     if (!email || isLoading || cooldown > 0) return;
 
     const result = await resendVerificationEmail(email);
@@ -42,7 +42,7 @@ function VerifyPendingContent() {
     if (result.success) {
       setCooldown(60); // 60 second cooldown
     }
-  };
+  }, [email, isLoading, cooldown, resendVerificationEmail]);
 
   const maskEmail = (email) => {
     if (!email) return '';

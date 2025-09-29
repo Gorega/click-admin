@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { FiCheckCircle, FiXCircle, FiLoader, FiMail, FiArrowRight, FiRefreshCw } from 'react-icons/fi';
 import { useAuth } from '../../../hooks/useAuth';
@@ -43,9 +43,9 @@ function VerifyEmailContent() {
       setVerificationState('error');
       setErrorMessage('Invalid verification link. No token provided.');
     }
-  }, [searchParams, verifyEmail]);
+  }, [searchParams]);
 
-  const handleResendVerification = async () => {
+  const handleResendVerification = useCallback(async () => {
     const email = prompt(t.verifyEmail.enterEmailPrompt);
     if (!email) return;
 
@@ -54,7 +54,7 @@ function VerifyEmailContent() {
     if (result.success) {
       router.push(`/auth/verify-pending?email=${encodeURIComponent(email)}`);
     }
-  };
+  }, [resendVerificationEmail, router, t.verifyEmail.enterEmailPrompt]);
 
   const renderContent = () => {
     switch (verificationState) {
@@ -240,9 +240,7 @@ function VerifyEmailContent() {
   );
 }
 
-export default function VerifyEmail() {
-  const { t, currentLanguage, setLanguage, isRTL } = useLanguage();
-  
+export default function VerifyEmail() {  
   return (
     <Suspense fallback={
       <div className={styles.container}>
