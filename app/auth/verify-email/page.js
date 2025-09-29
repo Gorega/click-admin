@@ -17,6 +17,25 @@ function VerifyEmailContent() {
   const { t, currentLanguage, setLanguage, isRTL } = useLanguage();
 
   useEffect(() => {
+    const verifyEmailToken = async (token) => {
+      setVerificationState('loading');
+      
+      const result = await verifyEmail(token);
+      
+      if (result.success) {
+        setVerificationState('success');
+      } else {
+        const errorMsg = result.error;
+        if (errorMsg.includes('expired') || errorMsg.includes('invalid')) {
+          setVerificationState('expired');
+          setErrorMessage(errorMsg);
+        } else {
+          setVerificationState('error');
+          setErrorMessage(errorMsg);
+        }
+      }
+    };
+
     const token = searchParams.get('token');
     if (token) {
       verifyEmailToken(token);
@@ -24,26 +43,7 @@ function VerifyEmailContent() {
       setVerificationState('error');
       setErrorMessage('Invalid verification link. No token provided.');
     }
-  }, [searchParams]);
-
-  const verifyEmailToken = async (token) => {
-    setVerificationState('loading');
-    
-    const result = await verifyEmail(token);
-    
-    if (result.success) {
-      setVerificationState('success');
-    } else {
-      const errorMsg = result.error;
-      if (errorMsg.includes('expired') || errorMsg.includes('invalid')) {
-        setVerificationState('expired');
-        setErrorMessage(errorMsg);
-      } else {
-        setVerificationState('error');
-        setErrorMessage(errorMsg);
-      }
-    }
-  };
+  }, [searchParams, verifyEmail]);
 
   const handleResendVerification = async () => {
     const email = prompt(t.verifyEmail.enterEmailPrompt);

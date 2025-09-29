@@ -10,10 +10,10 @@ import styles from './verify-pending.module.css';
 
 function VerifyPendingContent() {
   const [email, setEmail] = useState('');
-  const [isResending, setIsResending] = useState(false);
-  const [resendCooldown, setResendCooldown] = useState(0);
+  const [cooldown, setCooldown] = useState(0);
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { resendVerificationEmail, isLoading } = useAuth();
   const { t, currentLanguage, setLanguage, isRTL } = useLanguage();
 
   useEffect(() => {
@@ -27,32 +27,20 @@ function VerifyPendingContent() {
   }, [searchParams, router]);
 
   useEffect(() => {
-    let interval;
-    if (resendCooldown > 0) {
-      interval = setInterval(() => {
-        setResendCooldown((prev) => prev - 1);
-      }, 1000);
+    let timer;
+    if (cooldown > 0) {
+      timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
     }
-    return () => clearInterval(interval);
-  }, [resendCooldown]);
+    return () => clearTimeout(timer);
+  }, [cooldown]);
 
   const handleResendEmail = async () => {
-    if (!email || resendCooldown > 0) return;
+    if (!email || isLoading || cooldown > 0) return;
 
-    setIsResending(true);
-    try {
-      await axios.post('http://localhost:8000/api/users/resend-verification', {
-        email: email,
-      });
-
-      toast.success('Verification email sent! Please check your inbox.');
-      setResendCooldown(60); // 60 second cooldown
-    } catch (error) {
-      console.error('Resend error:', error);
-      const errorMessage = error.response?.data?.message || 'Failed to resend email. Please try again.';
-      toast.error(errorMessage);
-    } finally {
-      setIsResending(false);
+    const result = await resendVerificationEmail(email);
+    
+    if (result.success) {
+      setCooldown(60); // 60 second cooldown
     }
   };
 
@@ -220,37 +208,6 @@ function VerifyPendingContent() {
 }
 
 export default function VerifyPending() {
-  const [email, setEmail] = useState('');
-  const [cooldown, setCooldown] = useState(0);
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const { resendVerificationEmail, isLoading } = useAuth();
-
-  useEffect(() => {
-    const emailParam = searchParams.get('email');
-    if (emailParam) {
-      setEmail(emailParam);
-    }
-  }, [searchParams]);
-
-  useEffect(() => {
-    let timer;
-    if (cooldown > 0) {
-      timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
-    }
-    return () => clearTimeout(timer);
-  }, [cooldown]);
-
-  const handleResendEmail = async () => {
-    if (!email || isLoading || cooldown > 0) return;
-
-    const result = await resendVerificationEmail(email);
-    
-    if (result.success) {
-      setCooldown(60); // 60 second cooldown
-    }
-  };
-
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <VerifyPendingContent />
