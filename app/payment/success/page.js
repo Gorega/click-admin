@@ -96,7 +96,7 @@ function PaymentSuccessContent() {
 
   const handleDone = () => {
     // Redirect to the main app or dashboard
-    router.push('/dashboard');
+    router.push('/');
   };
 
   const handleViewReservation = () => {
@@ -111,15 +111,15 @@ function PaymentSuccessContent() {
     <div className={`${styles.container} ${(language === 'ar' || language === 'he') ? styles.rtl : styles.ltr}`}>
       <div className={styles.successCard}>
         {/* Header with Logo and Language Toggle */}
-        <div className={styles.header}>
-          <button 
-            className={styles.languageToggle}
-            onClick={toggleLanguage}
-            aria-label="Toggle language"
-          >
-            {t.toggleLanguage}
-          </button>
-        </div>
+          {/* <div className={styles.header}>
+            <button 
+              className={styles.languageToggle}
+              onClick={toggleLanguage}
+              aria-label="Toggle language"
+            >
+              {t.toggleLanguage}
+            </button>
+          </div> */}
 
         {/* Success Icon */}
         <div className={styles.iconContainer}>
