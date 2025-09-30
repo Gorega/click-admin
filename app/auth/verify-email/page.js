@@ -36,14 +36,39 @@ function VerifyEmailContent() {
       }
     };
 
-    const token = searchParams.get('token');
+    const getTokenFromUrl = () => {
+      // First try to get from searchParams
+      if (searchParams) {
+        const token = searchParams.get('token');
+        if (token) return token;
+      }
+      
+      // Fallback: extract from window.location if searchParams is not available
+      if (typeof window !== 'undefined') {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('token');
+      }
+      
+      return null;
+    };
+
+    const token = getTokenFromUrl();
     if (token) {
       verifyEmailToken(token);
     } else {
-      setVerificationState('error');
-      setErrorMessage('Invalid verification link. No token provided.');
+      // Only show error if we're sure there's no token
+      // Give it a moment for searchParams to load
+      const timer = setTimeout(() => {
+        const finalToken = getTokenFromUrl();
+        if (!finalToken) {
+          setVerificationState('error');
+          setErrorMessage('Invalid verification link. No token provided.');
+        }
+      }, 100);
+      
+      return () => clearTimeout(timer);
     }
-  }, [searchParams]);
+  }, [searchParams, verifyEmail]);
 
   const handleResendVerification = useCallback(async () => {
     const email = prompt(t.verifyEmail.enterEmailPrompt);
