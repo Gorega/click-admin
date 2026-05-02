@@ -6,7 +6,7 @@ import styles from './policy.module.css';
 const translations = {
   en: {
     title: 'Privacy Policy',
-    lastUpdated: 'Last updated: January 2024',
+    lastUpdated: 'Last updated: January 2026',
     introduction: {
       title: 'Introduction',
       content: 'Welcome to Click Reserve App. This privacy policy explains how we collect, use, and protect your personal information when you use our local reservation service in the West Bank.'
@@ -73,7 +73,7 @@ const translations = {
   },
   ar: {
     title: 'سياسة الخصوصية',
-    lastUpdated: 'آخر تحديث: يناير 2024',
+    lastUpdated: 'آخر تحديث: يناير 2026',
     introduction: {
       title: 'مقدمة',
       content: 'مرحباً بك في تطبيق كليك للحجوزات. تشرح سياسة الخصوصية هذه كيف نجمع ونستخدم ونحمي معلوماتك الشخصية عند استخدام خدمة الحجوزات المحلية في الضفة الغربية.'
@@ -152,7 +152,7 @@ export default function PolicyPage() {
     <div className={`${styles.container} ${language === 'ar' ? styles.rtl : styles.ltr}`}>
       <div className={styles.header}>
         <h1 className={styles.title}>{t.title}</h1>
-        <button 
+        <button
           className={styles.languageToggle}
           onClick={toggleLanguage}
           aria-label="Toggle language"
@@ -160,10 +160,10 @@ export default function PolicyPage() {
           {t.toggleLanguage}
         </button>
       </div>
-      
+
       <div className={styles.content}>
         <p className={styles.lastUpdated}>{t.lastUpdated}</p>
-        
+
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>{t.introduction.title}</h2>
           <p className={styles.sectionContent}>{t.introduction.content}</p>
